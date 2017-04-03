@@ -1,11 +1,11 @@
 [
   {
     "name": "webapp",
-    "image": "training/webapp",
+    "image": "${container_source}",
     "cpu": 10,
     "portMappings": [
       {
-          "containerPort": 5000,
+          "containerPort": ${container_port},
           "hostPort": 0
       }
     ],

@@ -1,41 +1,23 @@
 
-
-#resource "aws_ecs_service" "mongo" {
-#  name            = "mongodb"
-#  cluster         = "${aws_ecs_cluster.fuck.id}"
-#  task_definition = "${aws_ecs_task_definition.mongo.arn}"
-#  desired_count   = 3
-#  iam_role        = "${aws_iam_role.foo.arn}"
-#  depends_on      = ["aws_iam_role_policy.foo"]
-
-#  placement_strategy {
-#    type  = "binpack"
-#    field = "cpu"
-#  }
-
-#  load_balancer {
-#    elb_name       = "${aws_elb.foo.name}"
-#    container_name = "mongo"
-#    container_port = 8080
-#  }
-
-#  placement_constraints {
-#    type       = "memberOf"
-#    expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
-#  }
-#}
-
 resource "aws_security_group" "alb_sg" {
   name        = "alb_sg"
   description = "ALB SG for Hello ECS Project"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  ingress = [
+            {
+                from_port   = 80
+                to_port     = 80
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+            },
+            {
+                from_port   = 443
+                to_port     = 443
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+            }
+      ]
   egress {
     from_port       = 0
     to_port         = 0
@@ -62,9 +44,18 @@ resource "aws_alb_listener" "front_end" {
   }
 }
 
+data "template_file" "hello_ecs_def" {
+  template = "${file("task_definitions/hello_ecs.json")}"
+
+  vars {
+    container_port = "${var.container_port}"
+    container_source = "${var.container_source}"
+  }
+}
+
 resource "aws_ecs_task_definition" "hello_ecs" {
   family = "hello-ecs-family"
-  container_definitions = "${file("task_definitions/hello_ecs.json")}"
+  container_definitions = "${data.template_file.hello_ecs_def.rendered}"
 }
 
 resource "aws_alb_target_group" "hello_ecs" {
@@ -72,22 +63,19 @@ resource "aws_alb_target_group" "hello_ecs" {
   port     = 9090
   protocol = "HTTP"
   vpc_id   = "${aws_vpc.vpc.id}"
-
 }
 
 resource "aws_ecs_service" "hello_ecs" {
   name = "hello_ecs"
-  cluster = "${aws_ecs_cluster.fuck.id}"
+  cluster = "${aws_ecs_cluster.task_cluster.id}"
   task_definition = "${aws_ecs_task_definition.hello_ecs.arn}"
-  desired_count = 5
+  desired_count = "${var.container_count}"
   iam_role        = "${aws_iam_role.ecs_role.arn}"
-  depends_on      = ["aws_iam_role.ecs_role"]
-
-
+  depends_on      = ["aws_iam_role.ecs_role", "aws_alb_listener.front_end"]
 
   load_balancer {
     target_group_arn = "${aws_alb_target_group.hello_ecs.arn}"
     container_name = "webapp"
-    container_port = 5000
+    container_port = "${var.container_port}"
   }
 }
