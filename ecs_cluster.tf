@@ -32,7 +32,7 @@ resource "aws_launch_configuration" "as_conf" {
   instance_type = "${var.cluster_instance_type}"
   key_name      = "${var.aws_key_name}"
   security_groups = ["${aws_security_group.hello_ecs.id}"]
-  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile.name}"
+  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance_profile.id}"
   user_data = "${data.template_file.ecs_init.rendered}"
 
   lifecycle {
