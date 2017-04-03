@@ -29,4 +29,3 @@ Known Issues
 ============
 * Currently only runs one service, ideally should be refactored to handle multiple services via Terraform modules
 * Only tested in us-east-1, due to default AMI, must lookup other regions AMIs
-* Must run twice on first run, due to a race condition between container
