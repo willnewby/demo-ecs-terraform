@@ -1,0 +1,8 @@
+
+# Ignore Emacs Artifacts
+*~
+#*#
+
+# Ignore Terraform state
+terraform.tfstate*
+test.plan
