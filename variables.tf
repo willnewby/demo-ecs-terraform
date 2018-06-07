@@ -5,6 +5,11 @@ variable "vpc" {
   default = "hello-ecs"
 }
 
+variable "aws_region" {
+  description = "AWS Region (i.e. us-east-1 or us-west-2)"
+  default = "us-east-1"
+}
+
 variable "aws_key_name" {
     description = "key_name of an SSH key that you've already created in AWS"
 }
@@ -13,7 +18,6 @@ variable "availability-zones" {
   description = "The availability-zones to create"
   default = "us-east-1a,us-east-1b,us-east-1d,us-east-1e"
 }
-
 
 ## ECS Cluster Variables
 variable "cluster_instance_type" {

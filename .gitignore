@@ -6,3 +6,4 @@
 # Ignore Terraform state
 terraform.tfstate*
 test.plan
+.terraform/

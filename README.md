@@ -13,19 +13,23 @@ Project Requirements
 
 Setup
 =====
-* Install terraform
+* Install terraform i.e. `brew install terraform`
+* `git clone git@github.com:willnewby/demo-ecs-terraform.git`
+* `cd demo-ecs-terraform`
+* `terraform init`
 
 Usage
 =====
+* `terraform plan`
 * `terraform apply`
 
 
 TODO
 ====
-* Refactor hello_ecs_service.tf into a module to enable multiple services on one ECS cluster
-* Refactor ecs_cluster.tf into a module to enable multiple ECS clusters
+* Fix deprecation notices
 
 Known Issues
 ============
 * Currently only runs one service, ideally should be refactored to handle multiple services via Terraform modules
+* Currently only runs one cluster, need to figure out running multiple clusters, staging + production
 * Only tested in us-east-1, due to default AMI, must lookup other regions AMIs
